@@ -4,7 +4,7 @@ import {
   FaSlash,
   FaRegCircle,
   FaEraser,
-  // FaArrowRight,
+  FaArrowRight,
   FaDownload,
   FaFont,
   FaPaintBrush,
@@ -21,6 +21,14 @@ const Toolbar = () => {
 
   return (
     <div className={classes.container}>
+      <div
+        className={cx(classes.toolItem, {
+          [classes.active]: activeToolItem === "PAINTBRUSHTOOL",
+        })}
+        onClick={() => handleToolItemClick("PAINTBRUSHTOOL")}
+      >
+        <FaPaintBrush />
+      </div>
       <div
         className={cx(classes.toolItem, {
           [classes.active]: activeToolItem === "LINETOOL",
@@ -48,11 +56,11 @@ const Toolbar = () => {
       </div>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "PAINTBRUSHTOOL",
+          [classes.active]: activeToolItem === "ARROWTOOL",
         })}
-        onClick={() => handleToolItemClick("PAINTBRUSHTOOL")}
+        onClick={() => handleToolItemClick("ARROWTOOL")}
       >
-        <FaPaintBrush />
+        <FaArrowRight />
       </div>
       <div
         className={cx(classes.toolItem, {

@@ -4,8 +4,6 @@ import boardContext from "./board-context";
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 import { createRoughElement } from "../utils/elements";
 
-// const gen = rough.generator();
-
 const boardReducer = (state, action) => {
   switch (action.type) {
     case BOARD_ACTIONS.CHANGE_TOOL: {
