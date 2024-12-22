@@ -1,4 +1,5 @@
 import { TOOL_ITEMS } from "../constants";
+import getStroke from "perfect-freehand";
 import rough from "roughjs/bin/rough";
 import { getArrowHeadCoordinates } from "./math";
 import { ARROW_LENGTH } from "../constants";
@@ -36,6 +37,17 @@ export const createRoughElement = (
     options.strokeWidth = size;
   }
   switch (type) {
+    case TOOL_ITEMS.BRUSHTOOL: {
+      const brushelement = {
+        id,
+        points: [{ x: x1, y: y1 }],
+        path: new Path2D(getSvgPathFromStroke(getStroke([{ x: x1, y: y1 }]))),
+        type,
+        stroke,
+      };
+      return brushelement;
+    }
+
     case TOOL_ITEMS.LINETOOL:
       element.roughEle = gen.line(x1, y1, x2, y2, options);
       return element;
@@ -70,4 +82,20 @@ export const createRoughElement = (
     default:
       throw new Error("Type not Recognised");
   }
+};
+
+export const getSvgPathFromStroke = (stroke) => {
+  if (!stroke.length) return "";
+
+  const d = stroke.reduce(
+    (acc, [x0, y0], i, arr) => {
+      const [x1, y1] = arr[(i + 1) % arr.length];
+      acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+      return acc;
+    },
+    ["M", ...stroke[0], "Q"]
+  );
+
+  d.push("Z");
+  return d.join(" ");
 };

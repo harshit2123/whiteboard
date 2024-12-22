@@ -1,7 +1,8 @@
 import React, { useReducer } from "react";
 import boardContext from "./board-context";
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
-import { createRoughElement } from "../utils/elements";
+import { createRoughElement, getSvgPathFromStroke } from "../utils/elements";
+import getStroke from "perfect-freehand";
 
 const boardReducer = (state, action) => {
   switch (action.type) {
@@ -21,34 +22,72 @@ const boardReducer = (state, action) => {
         clientY,
         { type: state.activeToolItem, stroke, fill, size }
       );
-      const prevElements = state.elements;
       return {
         ...state,
         toolActionType: TOOL_ACTION_TYPES.DRAWING,
-        elements: [...prevElements, newElement], // Add new element to the array
+        elements: [...state.elements, newElement],
       };
     }
     case BOARD_ACTIONS.DRAW_MOVE: {
+      if (state.toolActionType !== TOOL_ACTION_TYPES.DRAWING) {
+        return state;
+      }
+
       const { clientX, clientY } = action.payload;
       const newElements = [...state.elements];
       const index = state.elements.length - 1;
-      const { x1, y1, stroke, fill, size } = newElements[index];
-      const newElement = createRoughElement(index, x1, y1, clientX, clientY, {
-        type: state.activeToolItem,
-        stroke,
-        fill,
-        size,
-      });
-      newElements[index] = newElement;
-      return {
-        ...state,
-        elements: newElements,
-      };
+      const currentElement = newElements[index];
+
+      if (!currentElement) {
+        return state;
+      }
+
+      switch (currentElement.type) {
+        case TOOL_ITEMS.LINETOOL:
+        case TOOL_ITEMS.RECTANGLETOOL:
+        case TOOL_ITEMS.CIRCLETOOL:
+        case TOOL_ITEMS.ARROWTOOL: {
+          const { x1, y1, stroke, fill, size } = currentElement;
+          const newElement = createRoughElement(
+            index,
+            x1,
+            y1,
+            clientX,
+            clientY,
+            {
+              type: state.activeToolItem,
+              stroke,
+              fill,
+              size,
+            }
+          );
+          newElements[index] = newElement;
+          return {
+            ...state,
+            elements: newElements,
+          };
+        }
+        case TOOL_ITEMS.BRUSHTOOL: {
+          newElements[index].points = [
+            ...newElements[index].points,
+            { x: clientX, y: clientY },
+          ];
+          newElements[index].path = new Path2D(
+            getSvgPathFromStroke(getStroke(newElements[index].points))
+          );
+          return {
+            ...state,
+            elements: newElements,
+          };
+        }
+        default:
+          return state;
+      }
     }
     case BOARD_ACTIONS.DRAW_UP: {
       return {
         ...state,
-        toolActionType: TOOL_ACTION_TYPES,
+        toolActionType: TOOL_ACTION_TYPES.NONE, // Fixed to set specific type
       };
     }
     default:
@@ -92,6 +131,10 @@ const BoardProvider = ({ children }) => {
   };
 
   const boardMouseMoveHandler = (event) => {
+    if (boardState.toolActionType !== TOOL_ACTION_TYPES.DRAWING) {
+      return;
+    }
+
     const { clientX, clientY } = event;
     dispatchBoardAction({
       type: BOARD_ACTIONS.DRAW_MOVE,
@@ -101,6 +144,7 @@ const BoardProvider = ({ children }) => {
       },
     });
   };
+
   const boardMouseUpHandler = () => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.DRAW_UP,

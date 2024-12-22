@@ -3,6 +3,7 @@ import rough from "roughjs";
 import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES } from "../../constants";
 import toolboxContext from "../../store/ToolBox-context";
+import { TOOL_ITEMS } from "../../constants";
 
 function Board() {
   const canvasRef = useRef();
@@ -27,8 +28,23 @@ function Board() {
     context.save();
 
     const roughCanvas = rough.canvas(canvas);
+
     elements.forEach((element) => {
-      roughCanvas.draw(element.roughEle);
+      switch (element.type) {
+        case TOOL_ITEMS.LINETOOL:
+        case TOOL_ITEMS.RECTANGLETOOL:
+        case TOOL_ITEMS.CIRCLETOOL:
+        case TOOL_ITEMS.ARROWTOOL:
+          roughCanvas.draw(element.roughEle);
+          break;
+        case TOOL_ITEMS.BRUSHTOOL:
+          context.fillStyle = element.stroke;
+          context.fill(element.path);
+          context.restore();
+          break;
+        default:
+          throw new Error("Type not recognised");
+      }
     });
 
     // Clear the canvas when component is unmounted or before each draw

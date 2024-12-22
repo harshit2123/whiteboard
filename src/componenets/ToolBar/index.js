@@ -14,6 +14,7 @@ import {
 import classes from "./index.module.css";
 import cx from "classnames";
 import boardContext from "../../store/board-context";
+import { TOOL_ITEMS } from "../../constants";
 
 const Toolbar = () => {
   const { activeToolItem, handleToolItemClick } = useContext(boardContext);
@@ -23,34 +24,34 @@ const Toolbar = () => {
     <div className={classes.container}>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "PAINTBRUSHTOOL",
+          [classes.active]: activeToolItem === TOOL_ITEMS.BRUSHTOOL,
         })}
-        onClick={() => handleToolItemClick("PAINTBRUSHTOOL")}
+        onClick={() => handleToolItemClick(TOOL_ITEMS.BRUSHTOOL)}
       >
         <FaPaintBrush />
       </div>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "LINETOOL",
+          [classes.active]: activeToolItem === TOOL_ITEMS.LINETOOL,
         })}
-        onClick={() => handleToolItemClick("LINETOOL")}
+        onClick={() => handleToolItemClick(TOOL_ITEMS.LINETOOL)}
       >
         <FaSlash />
       </div>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "RECTANGLETOOL",
+          [classes.active]: activeToolItem === TOOL_ITEMS.RECTANGLETOOL,
         })}
-        onClick={() => handleToolItemClick("RECTANGLETOOL")}
+        onClick={() => handleToolItemClick(TOOL_ITEMS.RECTANGLETOOL)}
       >
         <LuRectangleHorizontal />
       </div>
 
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "CIRCLETOOL",
+          [classes.active]: activeToolItem === TOOL_ITEMS.CIRCLETOOL,
         })}
-        onClick={() => handleToolItemClick("CIRCLETOOL")}
+        onClick={() => handleToolItemClick(TOOL_ITEMS.CIRCLETOOL)}
       >
         <FaRegCircle />
       </div>
