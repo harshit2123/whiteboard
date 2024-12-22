@@ -7,7 +7,7 @@ import boardContext from "../../store/board-context";
 
 export const Toolbox = () => {
   const { activeToolitem } = useContext(boardContext);
-  const { toolboxState, changeStroke ,changeFill} = useContext(toolboxContext);
+  const { toolboxState, changeStroke, changeFill } = useContext(toolboxContext);
   const strokeColor = toolboxState[activeToolitem]?.stroke;
   const fillColor = toolboxState[activeToolitem]?.fill;
 

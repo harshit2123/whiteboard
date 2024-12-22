@@ -37,7 +37,7 @@ export const COLORS = {
 export const ARROW_LENGTH = 20;
 export const TOOLBOX_ACTIONS = {
   CHANGE_STROKE: "CHAGE_STROKE",
-  CHANGE_FILL: "CHANGEFILL",
+  CHANGE_FILL: "CHANGE_FILL",
 };
 
 export const FILL_TOOL_TYPES = [

@@ -1,11 +1,6 @@
 import React, { useReducer } from "react";
 import toolboxContext from "./ToolBox-context";
-import {
-  COLORS,
-  TOOL_ACTION_TYPES,
-  TOOL_ITEMS,
-  TOOLBOX_ACTIONS,
-} from "../constants";
+import { COLORS, TOOL_ITEMS, TOOLBOX_ACTIONS } from "../constants";
 
 function toolboxReducer(state, action) {
   switch (action.type) {
@@ -24,7 +19,7 @@ function toolboxReducer(state, action) {
         ...state,
         [action.payload.tool]: {
           ...state[action.payload.tool],
-          stroke: action.payload.stroke,
+          fill: action.payload.fill,
         },
       };
     }
@@ -70,6 +65,7 @@ const ToolBoxprovider = ({ children }) => {
       },
     });
   };
+
   const changeFillHandler = (tool, fill) => {
     dispatchToolboxAction({
       type: TOOLBOX_ACTIONS.CHANGE_FILL,
