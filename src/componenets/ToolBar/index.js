@@ -73,9 +73,9 @@ const Toolbar = () => {
       </div>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "ERASERTOOL",
+          [classes.active]: activeToolItem === TOOL_ITEMS.ERASER,
         })}
-        onClick={() => handleToolItemClick("ERASERTOOL")}
+        onClick={() => handleToolItemClick(TOOL_ITEMS.ERASER)}
       >
         <FaEraser />
       </div>
