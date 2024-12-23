@@ -17,7 +17,8 @@ import boardContext from "../../store/board-context";
 import { TOOL_ITEMS } from "../../constants";
 
 const Toolbar = () => {
-  const { activeToolItem, handleToolItemClick } = useContext(boardContext);
+  const { activeToolItem, handleToolItemClick, undo, redo } =
+    useContext(boardContext);
   // const [activeToolItem, setActiveToolItem] = useState("LINETOOL");
 
   return (
@@ -65,7 +66,7 @@ const Toolbar = () => {
       </div>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === TOOL_ITEMS.TEXT,
+          [classes.active]: activeToolItem === "FONTTOOL",
         })}
         onClick={() => handleToolItemClick(TOOL_ITEMS.TEXT)}
       >
@@ -79,20 +80,10 @@ const Toolbar = () => {
       >
         <FaEraser />
       </div>
-      <div
-        className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "UNDOTOOL",
-        })}
-        onClick={() => handleToolItemClick("UNDOTOOL")}
-      >
+      <div className={classes.toolItem} onClick={undo}>
         <FaUndoAlt />
       </div>
-      <div
-        className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "REDOTOOL",
-        })}
-        onClick={() => handleToolItemClick("REDOTOOL")}
-      >
+      <div className={classes.toolItem} onClick={redo}>
         <FaRedoAlt />
       </div>
       <div

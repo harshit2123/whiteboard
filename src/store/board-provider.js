@@ -93,10 +93,23 @@ const boardReducer = (state, action) => {
           };
         }
         default:
-          return state;
+          throw new Error("Type not recognized");
       }
     }
     case BOARD_ACTIONS.DRAW_UP: {
+      if (state.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+        const newElements = [...state.elements];
+        const newHistory = [
+          ...state.history.slice(0, state.index + 1),
+          newElements,
+        ];
+        return {
+          ...state,
+          toolActionType: TOOL_ACTION_TYPES.NONE,
+          history: newHistory,
+          index: state.index + 1,
+        };
+      }
       return {
         ...state,
         toolActionType: TOOL_ACTION_TYPES.NONE,
@@ -104,22 +117,59 @@ const boardReducer = (state, action) => {
     }
     case BOARD_ACTIONS.ERASE: {
       const { clientX, clientY } = action.payload;
-      let newElements = state.elements.filter(
+      const newElements = state.elements.filter(
         (element) => !isPointNearElement(element, clientX, clientY)
       );
+      // During continuous erasing, just update elements
       return {
         ...state,
         elements: newElements,
+      };
+    }
+    case BOARD_ACTIONS.ERASE_UP: {
+      // Save to history only when erasing is complete
+      const newHistory = [
+        ...state.history.slice(0, state.index + 1),
+        [...state.elements],
+      ];
+      return {
+        ...state,
+        toolActionType: TOOL_ACTION_TYPES.NONE,
+        history: newHistory,
+        index: state.index + 1,
       };
     }
     case BOARD_ACTIONS.CHANGE_TEXT: {
       const index = state.elements.length - 1;
       const newElements = [...state.elements];
       newElements[index].text = action.payload.text;
+
+      const newHistory = [
+        ...state.history.slice(0, state.index + 1),
+        newElements,
+      ];
       return {
         ...state,
         toolActionType: TOOL_ACTION_TYPES.NONE,
         elements: newElements,
+        history: newHistory,
+        index: state.index + 1,
+      };
+    }
+    case BOARD_ACTIONS.UNDO: {
+      if (state.index <= 0) return state;
+      return {
+        ...state,
+        elements: [...state.history[state.index - 1]],
+        index: state.index - 1,
+      };
+    }
+    case BOARD_ACTIONS.REDO: {
+      if (state.index >= state.history.length - 1) return state;
+      return {
+        ...state,
+        elements: [...state.history[state.index + 1]],
+        index: state.index + 1,
       };
     }
     default:
@@ -131,6 +181,8 @@ const initialBoardState = {
   activeToolItem: TOOL_ITEMS.BRUSHTOOL,
   toolActionType: TOOL_ACTION_TYPES.NONE,
   elements: [],
+  history: [[]],
+  index: 0,
 };
 
 const BoardProvider = ({ children }) => {
@@ -205,11 +257,33 @@ const BoardProvider = ({ children }) => {
 
   const boardMouseUpHandler = () => {
     if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.DRAW_UP,
+      });
+    } else if (boardState.toolActionType === TOOL_ACTION_TYPES.ERASING) {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.ERASE_UP,
+      });
+    } else {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
+        payload: {
+          actionType: TOOL_ACTION_TYPES.NONE,
+        },
+      });
+    }
+  };
+
+  const boardUndoHandler = () => {
     dispatchBoardAction({
-      type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
-      payload: {
-        actionType: TOOL_ACTION_TYPES.NONE,
-      },
+      type: BOARD_ACTIONS.UNDO,
+    });
+  };
+
+  const boardRedoHandler = () => {
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.REDO,
     });
   };
 
@@ -222,6 +296,8 @@ const BoardProvider = ({ children }) => {
     boardMouseMoveHandler,
     boardMouseUpHandler,
     textAreaBlurHandler,
+    undo: boardUndoHandler,
+    redo: boardRedoHandler,
   };
 
   return (
