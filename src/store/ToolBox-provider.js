@@ -37,7 +37,6 @@ function toolboxReducer(state, action) {
 const initialToolboxState = {
   [TOOL_ITEMS.BRUSHTOOL]: {
     stroke: COLORS.BLACK,
-
   },
 
   [TOOL_ITEMS.LINETOOL]: {
@@ -57,6 +56,10 @@ const initialToolboxState = {
   [TOOL_ITEMS.ARROWTOOL]: {
     stroke: COLORS.BLACK,
     size: 1,
+  },
+  [TOOL_ITEMS.TEXT]: {
+    stroke: COLORS.BLACK,
+    size: 32,
   },
 };
 

@@ -112,6 +112,16 @@ const boardReducer = (state, action) => {
         elements: newElements,
       };
     }
+    case BOARD_ACTIONS.CHANGE_TEXT: {
+      const index = state.elements.length - 1;
+      const newElements = [...state.elements];
+      newElements[index].text = action.payload.text;
+      return {
+        ...state,
+        toolActionType: TOOL_ACTION_TYPES.NONE,
+        elements: newElements,
+      };
+    }
     default:
       return state;
   }
@@ -139,6 +149,7 @@ const BoardProvider = ({ children }) => {
   };
 
   const boardMouseDownHandler = (event, toolboxState) => {
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
     const { clientX, clientY } = event;
     if (boardState.activeToolItem === TOOL_ITEMS.ERASER) {
       dispatchBoardAction({
@@ -183,9 +194,22 @@ const BoardProvider = ({ children }) => {
     }
   };
 
-  const boardMouseUpHandler = () => {
+  const textAreaBlurHandler = (text) => {
     dispatchBoardAction({
-      type: BOARD_ACTIONS.DRAW_UP,
+      type: BOARD_ACTIONS.CHANGE_TEXT,
+      payload: {
+        text,
+      },
+    });
+  };
+
+  const boardMouseUpHandler = () => {
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
+      payload: {
+        actionType: TOOL_ACTION_TYPES.NONE,
+      },
     });
   };
 
@@ -197,6 +221,7 @@ const BoardProvider = ({ children }) => {
     boardMouseDownHandler,
     boardMouseMoveHandler,
     boardMouseUpHandler,
+    textAreaBlurHandler,
   };
 
   return (

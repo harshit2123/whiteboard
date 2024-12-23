@@ -3,15 +3,18 @@ import rough from "roughjs";
 import boardContext from "../../store/board-context";
 import toolboxContext from "../../store/ToolBox-context";
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
+import classes from "./index.module.css";
 
 function Board() {
   const canvasRef = useRef();
+  const textArearef = useRef();
   const {
     elements,
     toolActionType,
     boardMouseDownHandler,
     boardMouseMoveHandler,
     boardMouseUpHandler,
+    textAreaBlurHandler,
   } = useContext(boardContext);
   const { toolboxState } = useContext(toolboxContext);
 
@@ -42,7 +45,11 @@ function Board() {
           context.restore();
           break;
         case TOOL_ITEMS.TEXT:
-          console.log("Something");
+          context.textBaseline = "top";
+          context.font = `${element.size}px Caveat`;
+          context.fillStyle = element.stroke;
+          context.fillText(element.text, element.x1, element.y1);
+          context.restore();
           break;
         default:
           throw new Error("Type not recognised");
@@ -53,6 +60,15 @@ function Board() {
       context.clearRect(0, 0, canvas.width, canvas.height);
     };
   }, [elements]);
+
+  useEffect(() => {
+    const textarea = textArearef.current;
+    if (toolActionType === TOOL_ACTION_TYPES.WRITING) {
+      setTimeout(() => {
+        textarea.focus();
+      }, 0);
+    }
+  }, [toolActionType]);
 
   const handleBoardMouseDown = (event) => {
     boardMouseDownHandler(event, toolboxState);
@@ -66,21 +82,22 @@ function Board() {
     boardMouseUpHandler();
   };
 
-  // // Get the last element safely
-  // const lastElement =
-  //   elements.length > 0 ? elements[elements.length - 1] : null;
   return (
     <>
       {toolActionType === TOOL_ACTION_TYPES.WRITING && (
         <textarea
           type="text"
+          ref={textArearef}
+          className={classes.textElementBox}
           style={{
             top: elements[elements.length - 1].y1,
             left: elements[elements.length - 1].x1,
             fontSize: `${elements[elements.length - 1]?.size}px`,
             color: elements[elements.length - 1]?.stroke,
           }}
-          // onBlur={() => textAreaBlur(event.target.value)}
+          onBlur={(event) =>
+            textAreaBlurHandler(event.target.value, toolboxState)
+          }
         />
       )}
       <canvas
