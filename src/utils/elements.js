@@ -6,7 +6,7 @@ import { ARROW_LENGTH } from "../constants";
 
 const gen = rough.generator();
 
-export const createRoughElement = (
+export const createElement = (
   id,
   x1,
   y1,
@@ -80,6 +80,9 @@ export const createRoughElement = (
         [x4, y4],
       ];
       element.roughEle = gen.linearPath(points, options);
+      return element;
+    case TOOL_ITEMS.TEXT:
+      element.text = "";
       return element;
     default:
       throw new Error("Type not Recognised");

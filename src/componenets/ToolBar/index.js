@@ -65,9 +65,9 @@ const Toolbar = () => {
       </div>
       <div
         className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "FONTTOOL",
+          [classes.active]: activeToolItem === TOOL_ITEMS.TEXT,
         })}
-        onClick={() => handleToolItemClick("FONTTOOL")}
+        onClick={() => handleToolItemClick(TOOL_ITEMS.TEXT)}
       >
         <FaFont />
       </div>

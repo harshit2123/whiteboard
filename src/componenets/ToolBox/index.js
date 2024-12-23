@@ -5,7 +5,6 @@ import {
   COLORS,
   FILL_TOOL_TYPES,
   STROKE_TOOL_TYPES,
-  TOOL_ITEMS,
   SIZE_TOOL_TYPES,
 } from "../../constants";
 import toolboxContext from "../../store/ToolBox-context";
