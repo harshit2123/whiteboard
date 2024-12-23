@@ -19,7 +19,49 @@ import { TOOL_ITEMS } from "../../constants";
 const Toolbar = () => {
   const { activeToolItem, handleToolItemClick, undo, redo } =
     useContext(boardContext);
-  // const [activeToolItem, setActiveToolItem] = useState("LINETOOL");
+
+  const handleDownloadClick = () => {
+    const downloadCanvas = (canvas) => {
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const filename = `whiteboard-${timestamp}.png`;
+
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    };
+
+    try {
+      const canvas = document.querySelector("canvas");
+      if (!canvas) throw new Error("Canvas not found");
+
+      // For drawings that need a white background
+      if (canvas.style.background !== "white") {
+        const tempCanvas = document.createElement("canvas");
+        const ctx = tempCanvas.getContext("2d");
+        if (!ctx) throw new Error("Could not get canvas context");
+
+        // Copy dimensions
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+
+        // Add white background and draw original content
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        ctx.drawImage(canvas, 0, 0);
+
+        downloadCanvas(tempCanvas);
+      } else {
+        downloadCanvas(canvas);
+      }
+    } catch (error) {
+      console.error("Download failed:", error.message);
+    }
+  };
 
   return (
     <div className={classes.container}>
@@ -86,12 +128,7 @@ const Toolbar = () => {
       <div className={classes.toolItem} onClick={redo}>
         <FaRedoAlt />
       </div>
-      <div
-        className={cx(classes.toolItem, {
-          [classes.active]: activeToolItem === "DOWNLOAD",
-        })}
-        onClick={() => handleToolItemClick("DOWNLOAD")}
-      >
+      <div className={classes.toolItem} onClick={handleDownloadClick}>
         <FaDownload />
       </div>
     </div>

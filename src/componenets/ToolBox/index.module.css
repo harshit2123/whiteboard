@@ -24,7 +24,7 @@
   background: linear-gradient(
       to top left,
       rgba(255, 0, 0, 0) 0%,
-      rgba(255, 0, 0, 0) calc(50%- 0.8px),
+      rgba(255, 0, 0, 0) calc(50% - 0.8px),
       rgba(255, 0, 0, 1) 50%,
       rgba(255, 0, 0, 0) calc(50% + 0.8px),
       rgba(255, 0, 0, 0) 100%
@@ -45,5 +45,5 @@
 }
 
 .colorPicker {
-  @apply mr-5 rounded border-2 border-neutral-400; /* Fixed spacing */
+  @apply mr-5 w-10 h-10 rounded border-2 border-neutral-400;
 }

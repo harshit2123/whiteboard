@@ -12,7 +12,7 @@ import toolboxContext from "../../store/ToolBox-context";
 import boardContext from "../../store/board-context";
 
 export const Toolbox = () => {
-  const { activeToolItem } = useContext(boardContext); // Changed from activeToolitem to activeToolItem
+  const { activeToolItem } = useContext(boardContext);
   const { toolboxState, changeStroke, changeFill, changeSize } =
     useContext(toolboxContext);
 
@@ -25,7 +25,17 @@ export const Toolbox = () => {
       {STROKE_TOOL_TYPES.includes(activeToolItem) && (
         <div className={classes.selectOptionContainer}>
           <div className={classes.toolBoxLabel}>Stroke Color</div>
-          <div className={classes.colorContainer}>
+          <div className={classes.colorsContainer}>
+            <div>
+              <input
+                className={classes.colorPicker}
+                type="color"
+                value={strokeColor}
+                onChange={(event) =>
+                  changeStroke(activeToolItem, event.target.value)
+                }
+              />
+            </div>
             {Object.keys(COLORS).map((k) => {
               return (
                 <div
@@ -44,7 +54,24 @@ export const Toolbox = () => {
       {FILL_TOOL_TYPES.includes(activeToolItem) && (
         <div className={classes.selectOptionContainer}>
           <div className={classes.toolBoxLabel}>Fill Color</div>
-          <div className={classes.colorContainer}>
+          <div className={classes.colorsContainer}>
+            {fillColor === null ? (
+              <div
+                className={cx(classes.colorPicker, classes.noFillColorBox)}
+                onClick={() => changeFill(activeToolItem, COLORS.BLACK)}
+              ></div>
+            ) : (
+              <div>
+                <input
+                  className={classes.colorPicker}
+                  type="color"
+                  value={fillColor || COLORS.BLACK}
+                  onChange={(event) =>
+                    changeFill(activeToolItem, event.target.value)
+                  }
+                />
+              </div>
+            )}
             {Object.keys(COLORS).map((k) => (
               <div
                 key={k}
@@ -78,3 +105,5 @@ export const Toolbox = () => {
     </div>
   );
 };
+
+export default Toolbox;
