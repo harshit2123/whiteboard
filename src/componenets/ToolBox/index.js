@@ -59,7 +59,7 @@ export const Toolbox = () => {
               <div
                 className={cx(classes.colorPicker, classes.noFillColorBox)}
                 onClick={() => changeFill(activeToolItem, COLORS.BLACK)}
-              ></div>
+              />
             ) : (
               <div>
                 <input
@@ -72,6 +72,12 @@ export const Toolbox = () => {
                 />
               </div>
             )}
+            <div
+              className={cx(classes.colorBox, classes.noFillColorBox, {
+                [classes.activeColorBox]: fillColor === null,
+              })}
+              onClick={() => changeFill(activeToolItem, null)}
+            />
             {Object.keys(COLORS).map((k) => (
               <div
                 key={k}
